@@ -1,0 +1,1 @@
+An AI-powered resume screening platform that uses a PyTorch deep learning model to predict job roles and extract specific technical skills from PDF resumes with real-time match scoring.
