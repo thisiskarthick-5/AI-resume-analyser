@@ -2,6 +2,9 @@
 
 A professional final-year project that utilizes Deep Learning (PyTorch) to automate the recruitment process by predicting job roles and extracting key technical skills from resumes.
 
+## ✨ Live Demo
+**[Visit Live on Render](https://ai-resume-analyser-z2qg.onrender.com)**
+
 ## ✨ Features
 - **AI-Powered Prediction**: Uses a PyTorch Neural Network with an Embedding layer to categorize resumes into roles (Data Scientist, Web Developer, Java Developer, HR).
 - **Skill Matrix Extraction**: Automatically identifies technical keywords and calculates a match percentage against job requirements.
