@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Screening System - AI Smart Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Glassmorphism Upload Box */
+        .upload-section {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .drop-zone i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone h3 { margin-bottom: 0.5rem; }
+        .drop-zone p { color: var(--text-muted); }
+
+        input[type="file"] { display: none; }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 3rem;
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover { transform: translateY(-3px); }
+
+        .card h4 {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .role-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #818cf8;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #4ade80;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .skill-tag {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 2rem;
+            color: var(--primary);
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .fa-spin { animation: fa-spin 1s infinite linear; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Resume Screening System</h1>
+            <p>Smart Role Prediction & Skill Matrix Extraction</p>
+        </header>
+
+        <section class="upload-section">
+            <div class="drop-zone" id="dropZone">
+                <i class="fas fa-file-pdf"></i>
+                <h3 id="fileName">Drop your Resume here</h3>
+                <p>Supports only PDF format</p>
+                <input type="file" id="fileInput" accept="application/pdf">
+            </div>
+
+            <button class="btn" id="analyzeBtn">
+                <i class="fas fa-rocket"></i> Start AI Analysis
+            </button>
+
+            <div class="loading" id="loading">
+                <i class="fas fa-circle-notch fa-spin"></i> Processing your application...
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection">
+            <div class="results-grid">
+                <div class="card">
+                    <h4>Predicted Job Role</h4>
+                    <div class="role-value" id="resRole">Data Scientist</div>
+                </div>
+                <div class="card">
+                    <h4>Match Score</h4>
+                    <div class="score-value" id="resScore">85%</div>
+                </div>
+                <div class="card" style="grid-column: span 1 / -1;">
+                    <h4>Extracted Key Skills</h4>
+                    <div class="skills-container" id="resSkills">
+                        <!-- Skills will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        const loading = document.getElementById('loading');
+        
+        const API_BASE = "";
+        let selectedFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                fileName.textContent = selectedFile.name;
+                console.log("File selected:", selectedFile.name);
+            }
+        });
+
+        // Drag and Drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = "#6366f1";
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = "var(--border)";
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) {
+                selectedFile = e.dataTransfer.files[0];
+                fileName.textContent = selectedFile.name;
+                console.log("File dropped:", selectedFile.name);
+            }
+        });
+
+        analyzeBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            // Critical check for protocol to avoid CORS/Path issues
+            if (window.location.protocol === 'file:') {
+                alert("CRITICAL ERROR: Please do NOT open index.html directly from your folder. \n\nGo to your browser and type: http://127.0.0.1:5000");
+                return;
+            }
+
+            if (!selectedFile) {
+                alert("Please select a PDF first!");
+                return;
+            }
+
+            console.log("Starting analysis...");
+            loading.style.display = "block";
+            resultsSection.style.display = "none";
+            analyzeBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                // Step 1: Upload
+                console.log("Uploading file to:", `${API_BASE}/upload`);
+                const uploadRes = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                let uploadData;
+                const contentType = uploadRes.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    uploadData = await uploadRes.json();
+                } else {
+                    const text = await uploadRes.text();
+                    console.error("Server returned non-JSON:", text);
+                    throw new Error("Server error (Check console for HTML output)");
+                }
+                
+                if (!uploadRes.ok) {
+                    throw new Error(uploadData.error || "Upload failed");
+                }
+                
+                console.log("Upload successful. Path:", uploadData.path);
+
+                // Step 2: Predict
+                console.log("Sending predict request to:", `${API_BASE}/predict`);
+                const predictRes = await fetch(`${API_BASE}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: uploadData.path })
+                });
+                
+                let result;
+                const predictContentType = predictRes.headers.get("content-type");
+                if (predictContentType && predictContentType.indexOf("application/json") !== -1) {
+                    result = await predictRes.json();
+                } else {
+                    const text = await predictRes.text();
+                    console.error("Server returned non-JSON:", text);
+                    throw new Error("Prediction server error (Check console)");
+                }
+
+                if (!predictRes.ok) {
+                    throw new Error(result.error || "Prediction failed");
+                }
+
+                console.log("Analysis result:", result);
+
+                // Display results
+                if (result) {
+                    document.getElementById('resRole').textContent = result.role || "Unknown Role";
+                    document.getElementById('resScore').textContent = result.match_score || "0%";
+                    
+                    const skillsContainer = document.getElementById('resSkills');
+                    skillsContainer.innerHTML = '';
+                    
+                    if (result.skills && Array.isArray(result.skills) && result.skills.length > 0) {
+                        result.skills.forEach(skill => {
+                            const tag = document.createElement('span');
+                            tag.className = 'skill-tag';
+                            tag.textContent = skill;
+                            skillsContainer.appendChild(tag);
+                        });
+                    } else {
+                        skillsContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No matching skills identified.</p>';
+                    }
+
+                    resultsSection.style.display = "block";
+                    resultsSection.style.opacity = "1";
+                    setTimeout(() => {
+                        resultsSection.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+
+            } catch (err) {
+                console.error("Error during analysis:", err);
+                alert("Error: " + err.message);
+            } finally {
+                loading.style.display = "none";
+                analyzeBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

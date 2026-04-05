@@ -1,0 +1,7 @@
+flask
+torch
+torchvision
+PyPDF2
+pandas
+scikit-learn
+flask-cors
